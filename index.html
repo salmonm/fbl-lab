@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Functional Bioinformatics Lab - Ariel University</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #1e293b; line-height: 1.6; }
+
+    :root {
+      --navy:   #0d1b2a;
+      --navy2:  #1b2d42;
+      --teal:   #00b4d8;
+      --teal2:  #0096c7;
+      --teal3:  #90e0ef;
+      --accent: #48cae4;
+      --white:  #ffffff;
+      --light:  #f0f9ff;
+      --gray:   #64748b;
+      --lgray:  #e2e8f0;
+      --radius: 10px;
+      --shadow: 0 4px 24px rgba(13,27,42,0.10);
+      --shadow2:0 2px 8px rgba(13,27,42,0.07);
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(13,27,42,0.97); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,180,216,0.15);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px; height: 64px;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .nav-logo {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--teal), var(--teal2));
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 14px;
+      color: var(--navy); letter-spacing: -0.5px;
+    }
+    .nav-name { font-size: 15px; font-weight: 600; color: var(--white); }
+    .nav-name span { color: var(--teal); }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a {
+      color: rgba(255,255,255,0.70); text-decoration: none;
+      font-size: 14px; font-weight: 500; transition: color 0.2s; letter-spacing: 0.02em;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--teal); }
+    .nav-cta {
+      background: var(--teal) !important; color: var(--navy) !important;
+      padding: 7px 18px; border-radius: 6px; font-weight: 700 !important;
+    }
+    .nav-cta:hover { background: var(--accent) !important; }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh; background: var(--navy);
+      display: flex; align-items: center;
+      position: relative; overflow: hidden; padding-top: 64px;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background-image: radial-gradient(circle, rgba(0,180,216,0.18) 1px, transparent 1px);
+      background-size: 36px 36px;
+      animation: gridDrift 30s linear infinite;
+    }
+    @keyframes gridDrift { 0% { background-position: 0 0; } 100% { background-position: 36px 36px; } }
+    .hero::after {
+      content: ''; position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(0,180,216,0.12) 0%, transparent 70%);
+      top: -100px; right: -100px; border-radius: 50%; pointer-events: none;
+    }
+    .hero-inner {
+      position: relative; z-index: 2;
+      max-width: 1200px; margin: 0 auto; padding: 0 48px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+    }
+    .hero-tag {
+      display: inline-block;
+      background: rgba(0,180,216,0.12); border: 1px solid rgba(0,180,216,0.3);
+      color: var(--teal); font-size: 12px; font-weight: 600;
+      padding: 5px 14px; border-radius: 100px; letter-spacing: 0.08em;
+      text-transform: uppercase; margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: 52px; font-weight: 800; color: var(--white);
+      line-height: 1.12; margin-bottom: 8px; letter-spacing: -0.02em;
+    }
+    .hero h1 span { color: var(--teal); }
+    .hero-subtitle { font-size: 20px; font-weight: 500; color: rgba(255,255,255,0.55); margin-bottom: 24px; }
+    .hero-desc { font-size: 16px; color: rgba(255,255,255,0.50); max-width: 480px; line-height: 1.75; margin-bottom: 40px; }
+    .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--teal); color: var(--navy);
+      padding: 13px 28px; border-radius: var(--radius);
+      text-decoration: none; font-weight: 700; font-size: 15px;
+      transition: all 0.2s; display: inline-block;
+    }
+    .btn-primary:hover { background: var(--accent); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,180,216,0.35); }
+    .btn-outline {
+      border: 1.5px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.75);
+      padding: 13px 28px; border-radius: var(--radius);
+      text-decoration: none; font-weight: 600; font-size: 15px;
+      transition: all 0.2s; display: inline-block;
+    }
+    .btn-outline:hover { border-color: var(--teal); color: var(--teal); transform: translateY(-1px); }
+    .hero-stats {
+      display: flex; gap: 32px; margin-top: 48px;
+      padding-top: 40px; border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .stat-num { font-size: 32px; font-weight: 800; color: var(--teal); font-family: 'JetBrains Mono', monospace; letter-spacing: -0.02em; display: block; }
+    .stat-label { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.40); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; }
+    .hero-card {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px; padding: 40px; backdrop-filter: blur(10px);
+    }
+    .pi-avatar {
+      width: 80px; height: 80px; border-radius: 50%;
+      object-fit: cover; object-position: top center;
+      margin-bottom: 20px; border: 3px solid rgba(0,180,216,0.4);
+      display: block;
+    }
+    .pi-name { font-size: 22px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+    .pi-title { font-size: 14px; color: var(--teal); font-weight: 500; margin-bottom: 16px; }
+    .pi-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .badge {
+      background: rgba(0,180,216,0.10); border: 1px solid rgba(0,180,216,0.2);
+      color: var(--teal3); font-size: 11px; font-weight: 600;
+      padding: 4px 10px; border-radius: 100px; letter-spacing: 0.04em;
+    }
+    .pi-highlights { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .pi-highlights li { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: rgba(255,255,255,0.60); line-height: 1.5; }
+    .pi-highlights li::before { content: ''; width: 6px; height: 6px; background: var(--teal); border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+    .scroll-hint { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 2; }
+    .scroll-hint span { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 0.1em; }
+    .scroll-arrow { width: 1px; height: 40px; background: linear-gradient(to bottom, rgba(0,180,216,0.6), transparent); animation: scrollPulse 2s ease-in-out infinite; }
+    @keyframes scrollPulse { 0%,100%{opacity:0.5;} 50%{opacity:1;} }
+
+    /* SECTION COMMON */
+    section { padding: 96px 0; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
+    .section-label { font-size: 12px; font-weight: 700; color: var(--teal2); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; display: block; }
+    .section-title { font-size: 38px; font-weight: 800; color: var(--navy); letter-spacing: -0.02em; margin-bottom: 16px; line-height: 1.15; }
+    .section-desc { font-size: 17px; color: var(--gray); max-width: 620px; line-height: 1.7; margin-bottom: 56px; }
+
+    /* RESEARCH */
+    #research { background: var(--white); }
+    .research-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .research-card {
+      background: var(--light); border: 1px solid #dbeafe;
+      border-radius: 16px; padding: 32px; transition: all 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .research-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--teal), var(--teal2));
+      border-radius: 16px 16px 0 0; opacity: 0; transition: opacity 0.25s;
+    }
+    .research-card:hover { border-color: var(--teal); transform: translateY(-4px); box-shadow: var(--shadow); }
+    .research-card:hover::before { opacity: 1; }
+    .research-icon { width: 48px; height: 48px; border-radius: 12px; background: rgba(0,150,199,0.10); display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 20px; }
+    .research-card h3 { font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+    .research-card p { font-size: 14px; color: var(--gray); line-height: 1.65; }
+    .research-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+    .rtag { background: rgba(0,150,199,0.08); color: var(--teal2); font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 100px; letter-spacing: 0.03em; }
+
+    /* PUBLICATIONS */
+    #publications { background: #f8fafc; }
+    .pub-filter { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 36px; }
+    .pub-filter-btn {
+      background: var(--white); border: 1.5px solid var(--lgray);
+      color: var(--gray); font-size: 13px; font-weight: 600;
+      padding: 7px 18px; border-radius: 100px; cursor: pointer; transition: all 0.2s;
+    }
+    .pub-filter-btn.active, .pub-filter-btn:hover { background: var(--navy); border-color: var(--navy); color: var(--white); }
+    .pub-list { display: flex; flex-direction: column; gap: 16px; }
+    .pub-item {
+      background: var(--white); border: 1px solid var(--lgray);
+      border-radius: 12px; padding: 24px 28px;
+      display: flex; gap: 20px; align-items: flex-start;
+      transition: all 0.2s;
+    }
+    .pub-item:hover { border-color: var(--teal); box-shadow: var(--shadow2); }
+    .pub-item.hidden { display: none; }
+    .pub-year { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; color: var(--teal2); min-width: 42px; padding-top: 3px; }
+    .pub-body { flex: 1; }
+    .pub-title { font-size: 15px; font-weight: 600; color: var(--navy); margin-bottom: 6px; line-height: 1.45; }
+    .pub-title a { color: inherit; text-decoration: none; }
+    .pub-title a:hover { color: var(--teal2); text-decoration: underline; }
+    .pub-authors { font-size: 13px; color: var(--gray); margin-bottom: 8px; }
+    .pub-authors strong { color: var(--navy2); }
+    .pub-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .pub-journal { font-size: 13px; font-style: italic; color: var(--gray); }
+    .pub-citations { font-size: 12px; color: var(--gray); }
+    .pub-doi { font-size: 12px; font-weight: 500; color: var(--teal2); text-decoration: none; }
+    .pub-doi:hover { text-decoration: underline; }
+    .pub-more { text-align: center; margin-top: 32px; }
+    #show-more-btn {
+      background: var(--white); border: 1.5px solid var(--lgray);
+      color: var(--navy); font-size: 14px; font-weight: 600;
+      padding: 11px 32px; border-radius: var(--radius); cursor: pointer; transition: all 0.2s;
+    }
+    #show-more-btn:hover { border-color: var(--teal2); color: var(--teal2); }
+    .pub-scholar-link { display: inline-block; margin-left: 16px; font-size: 14px; font-weight: 600; color: var(--teal2); text-decoration: none; }
+    .pub-scholar-link:hover { text-decoration: underline; }
+
+    /* TEAM */
+    #team { background: var(--white); }
+    .team-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 48px; align-items: start; }
+    .pi-featured { background: var(--navy); border-radius: 20px; padding: 40px 36px; color: var(--white); position: sticky; top: 80px; }
+    .pi-avatar-lg {
+      width: 96px; height: 96px; border-radius: 50%;
+      object-fit: cover; object-position: top center;
+      margin-bottom: 20px; border: 3px solid rgba(0,180,216,0.5);
+      display: block;
+    }
+    .pi-featured h3 { font-size: 20px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+    .pi-featured .role { font-size: 13px; color: var(--teal); font-weight: 600; margin-bottom: 20px; line-height: 1.5; }
+    .pi-detail { font-size: 13px; color: rgba(255,255,255,0.55); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+    .pi-divider { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 20px 0; }
+    .h-index-row { display: flex; gap: 20px; }
+    .h-index-item { background: rgba(0,180,216,0.10); border: 1px solid rgba(0,180,216,0.2); border-radius: 10px; padding: 12px 16px; text-align: center; flex: 1; }
+    .h-num { font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 700; color: var(--teal); display: block; }
+    .h-src { font-size: 10px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.05em; }
+    .students-section h3 { font-size: 22px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+    .students-section > p { font-size: 14px; color: var(--gray); margin-bottom: 28px; }
+    .students-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .student-card {
+      background: var(--light); border: 1px solid #dbeafe;
+      border-radius: 12px; padding: 18px 20px;
+      display: flex; align-items: center; gap: 14px; transition: all 0.2s;
+    }
+    .student-card:hover { border-color: var(--teal); background: #e0f7fa; transform: translateX(3px); }
+    .student-avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--teal3), var(--teal));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 700; color: var(--navy); flex-shrink: 0;
+    }
+    .student-info h4 { font-size: 14px; font-weight: 600; color: var(--navy); margin-bottom: 2px; }
+    .student-info p { font-size: 12px; color: var(--gray); margin: 0; }
+    .student-cosupervisor { font-size: 11px !important; color: var(--primary) !important; margin-top: 3px !important; font-style: italic; }
+    .student-degree { margin-left: auto; font-size: 11px; font-weight: 700; background: var(--teal2); color: var(--white); padding: 3px 10px; border-radius: 100px; flex-shrink: 0; }
+    .student-degree.phd { background: var(--navy2); }
+    .alumni-toggle {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: none; border: 1.5px solid var(--lgray);
+      color: var(--gray); font-size: 13px; font-weight: 600;
+      padding: 8px 18px; border-radius: 8px; cursor: pointer; margin-top: 20px; transition: all 0.2s;
+    }
+    .alumni-toggle:hover { border-color: var(--teal); color: var(--teal2); }
+    .alumni-section { display: none; margin-top: 20px; }
+    .alumni-section.visible { display: block; }
+    .alumni-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 14px; }
+    .alumni-item { background: #f8fafc; border: 1px solid var(--lgray); border-radius: 10px; padding: 14px 16px; }
+    .alumni-item h5 { font-size: 13px; font-weight: 600; color: var(--navy2); margin-bottom: 2px; }
+    .alumni-item p { font-size: 12px; color: var(--gray); }
+
+    /* TEACHING */
+    #teaching { background: #f8fafc; }
+    .courses-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .course-card { background: var(--white); border: 1px solid var(--lgray); border-radius: 12px; padding: 24px; display: flex; gap: 16px; transition: all 0.2s; }
+    .course-card:hover { border-color: var(--teal); box-shadow: var(--shadow2); }
+    .course-num { width: 44px; height: 44px; background: var(--navy); color: var(--teal); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+    .course-info h4 { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+    .course-info p { font-size: 13px; color: var(--gray); margin-bottom: 10px; }
+    .course-level { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 100px; letter-spacing: 0.03em; }
+    .level-ug { background: #dbeafe; color: #1d4ed8; }
+    .level-grad { background: #f0fdf4; color: #166534; }
+    .level-med { background: #fef3c7; color: #92400e; }
+
+    /* NEWS */
+    #news { background: var(--white); }
+    .news-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .news-card { border: 1px solid var(--lgray); border-radius: 14px; overflow: hidden; transition: all 0.25s; }
+    .news-card:hover { border-color: var(--teal); transform: translateY(-3px); box-shadow: var(--shadow); }
+    .news-img { height: 120px; background: linear-gradient(135deg, var(--navy), var(--navy2)); display: flex; align-items: center; justify-content: center; font-size: 40px; }
+    .news-body { padding: 20px; }
+    .news-date { font-size: 12px; font-weight: 600; color: var(--teal2); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    .news-title { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 8px; line-height: 1.4; }
+    .news-journal { font-size: 12px; font-style: italic; color: var(--gray); margin-bottom: 12px; }
+    .news-link { font-size: 13px; font-weight: 600; color: var(--teal2); text-decoration: none; }
+    .news-link:hover { text-decoration: underline; }
+
+    /* CONTACT / JOIN */
+    #contact { background: var(--navy); padding: 96px 0; }
+    #contact .section-title { color: var(--white); }
+    #contact .section-label { color: var(--teal); }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+    .contact-desc { font-size: 17px; color: rgba(255,255,255,0.55); line-height: 1.75; margin-bottom: 40px; }
+    .contact-items { display: flex; flex-direction: column; gap: 16px; }
+    .contact-item { display: flex; align-items: center; gap: 14px; }
+    .contact-icon { width: 44px; height: 44px; background: rgba(0,180,216,0.10); border: 1px solid rgba(0,180,216,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .contact-text { font-size: 14px; color: rgba(255,255,255,0.60); line-height: 1.5; }
+    .contact-text strong { display: block; color: rgba(255,255,255,0.90); font-weight: 600; margin-bottom: 2px; }
+    .join-box { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 40px; }
+    .join-box h3 { font-size: 22px; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+    .join-box p { font-size: 14px; color: rgba(255,255,255,0.50); margin-bottom: 28px; line-height: 1.65; }
+    .join-positions { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
+    .position-item { background: rgba(0,180,216,0.06); border: 1px solid rgba(0,180,216,0.15); border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; }
+    .position-name { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.85); }
+    .position-tag { font-size: 11px; font-weight: 700; color: var(--teal); background: rgba(0,180,216,0.12); border: 1px solid rgba(0,180,216,0.2); padding: 2px 10px; border-radius: 100px; }
+
+    /* FOOTER */
+    footer { background: #070e17; padding: 48px 0; border-top: 1px solid rgba(255,255,255,0.05); }
+    .footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 48px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px; }
+    .footer-brand { font-size: 15px; font-weight: 700; color: rgba(255,255,255,0.45); }
+    .footer-brand span { color: var(--teal); }
+    .footer-links { display: flex; gap: 24px; list-style: none; }
+    .footer-links a { font-size: 13px; color: rgba(255,255,255,0.30); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--teal); }
+    .footer-copy { font-size: 12px; color: rgba(255,255,255,0.18); }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      nav { padding: 0 24px; }
+      .nav-links { display: none; }
+      .hero-inner { grid-template-columns: 1fr; gap: 48px; padding: 24px; }
+      .hero h1 { font-size: 36px; }
+      .research-grid, .team-grid, .contact-grid, .courses-grid, .news-grid { grid-template-columns: 1fr; }
+      .students-grid, .alumni-grid { grid-template-columns: 1fr; }
+      .container { padding: 0 24px; }
+      .pi-featured { position: static; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#home" class="nav-brand">
+    <div class="nav-logo">FBL</div>
+    <span class="nav-name"><span>Functional</span> Bioinformatics Lab</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#research">Research</a></li>
+    <li><a href="#publications">Publications</a></li>
+    <li><a href="#team">Team</a></li>
+    <li><a href="#teaching">Teaching</a></li>
+    <li><a href="#news">News</a></li>
+    <li><a href="#contact" class="nav-cta">Join Us</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-tag">Ariel University - Molecular Biology</div>
+      <h1>Functional<br/><span>Bioinformatics</span><br/>Lab</h1>
+      <p class="hero-subtitle">Decoding Biology Through Data</p>
+      <p class="hero-desc">
+        We develop and apply computational methods to uncover the molecular mechanisms
+        underlying cancer, epigenetics, reproductive health, and infectious disease -
+        turning large-scale genomic data into biological insight.
+      </p>
+      <div class="hero-btns">
+        <a href="#research" class="btn-primary">Explore Our Research</a>
+        <a href="#publications" class="btn-outline">Publications</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-num">100+</span>
+          <span class="stat-label">Publications</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">13K+</span>
+          <span class="stat-label">Citations (GS)</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">33</span>
+          <span class="stat-label">H-Index (GS)</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">18+</span>
+          <span class="stat-label">Students Trained</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="hero-card">
+        <img src="mali_photo.jpg" alt="Prof. Mali Salmon-Divon" class="pi-avatar" />
+        <p class="pi-name">Prof. Mali Salmon-Divon</p>
+        <p class="pi-title">Principal Investigator &amp; Full Professor</p>
+        <div class="pi-badges">
+          <span class="badge">Bioinformatics</span>
+          <span class="badge">Cancer Genomics</span>
+          <span class="badge">Epigenetics</span>
+          <span class="badge">RNA Biology</span>
+          <span class="badge">Computational Biology</span>
+        </div>
+        <ul class="pi-highlights">
+          <li>Head of Medical Sciences Program, School of Biomedical Sciences, Adelson Faculty of Medicine</li>
+          <li>Post-doctoral training at EMBL-EBI, Cambridge, UK (2007-2010)</li>
+          <li>Sabbatical at McGill University, Canada (2018-2019)</li>
+          <li>Co-author of landmark Nature &amp; Science papers on m6A RNA methylation</li>
+          <li>Member: ISCB, ICSR, EACR, ESHRE</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- RESEARCH -->
+<section id="research">
+  <div class="container">
+    <span class="section-label">What We Do</span>
+    <h2 class="section-title">Research Areas</h2>
+    <p class="section-desc">Our lab develops novel computational algorithms and bioinformatics approaches to understand disease at the molecular level. Many of our projects are carried out in close collaboration with leading experimental and clinical groups.</p>
+    <div class="research-grid">
+      <div class="research-card">
+        <div class="research-icon">🧬</div>
+        <h3>Cancer Genomics &amp; Transcriptomics</h3>
+        <p>Identifying molecular subtypes, biomarkers, and therapeutic targets in breast cancer, medulloblastoma, lymphoma, and AL amyloidosis using RNA-seq, microRNA, and multi-omics approaches.</p>
+        <div class="research-tags"><span class="rtag">RNA-seq</span><span class="rtag">Breast Cancer</span><span class="rtag">microRNA</span><span class="rtag">Biomarkers</span></div>
+      </div>
+      <div class="research-card">
+        <div class="research-icon">⚗️</div>
+        <h3>Epitranscriptomics &amp; Epigenetics</h3>
+        <p>Investigating RNA modifications (m6A, m1A) and chromatin organization - heterochromatin, nuclear lamina, DNA methylation - and their roles in gene regulation, development, and disease.</p>
+        <div class="research-tags"><span class="rtag">m6A methylation</span><span class="rtag">Chromatin</span><span class="rtag">Epigenomics</span><span class="rtag">CTCF</span></div>
+      </div>
+      <div class="research-card">
+        <div class="research-icon">🔬</div>
+        <h3>Reproductive Medicine Informatics</h3>
+        <p>Applying bioinformatics and statistical modeling to fertility data - sperm parameters, IVF outcomes, and ovulation biology - in collaboration with leading reproductive medicine clinics.</p>
+        <div class="research-tags"><span class="rtag">Fertility</span><span class="rtag">Semen Analysis</span><span class="rtag">IVF</span><span class="rtag">miRNA</span></div>
+      </div>
+      <div class="research-card">
+        <div class="research-icon">🦠</div>
+        <h3>Microbial Genomics &amp; Pathogenesis</h3>
+        <p>Comparative genomics and transcriptomics of bacterial pathogens including Brucella, E. coli ST131, and Salmonella to understand virulence mechanisms and antibiotic resistance.</p>
+        <div class="research-tags"><span class="rtag">Brucella</span><span class="rtag">Comparative Genomics</span><span class="rtag">AMR</span><span class="rtag">Virulence</span></div>
+      </div>
+      <div class="research-card">
+        <div class="research-icon">🤖</div>
+        <h3>AI &amp; Machine Learning in Medicine</h3>
+        <p>Developing machine learning models for clinical risk prediction, patient stratification, and drug response prediction from routine health records and genomic data.</p>
+        <div class="research-tags"><span class="rtag">Machine Learning</span><span class="rtag">Clinical AI</span><span class="rtag">Risk Models</span><span class="rtag">EHR</span></div>
+      </div>
+      <div class="research-card">
+        <div class="research-icon">🛠️</div>
+        <h3>Bioinformatics Tool Development</h3>
+        <p>Building open-source computational tools: PeakAnalyzer (chromatin annotation), VennBLAST (transcriptome comparison), CircosVCF (whole-genome variant visualization), and Benford-based tissue classifiers.</p>
+        <div class="research-tags"><span class="rtag">Software</span><span class="rtag">Genome Tools</span><span class="rtag">Visualization</span><span class="rtag">Open Source</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PUBLICATIONS -->
+<section id="publications">
+  <div class="container">
+    <span class="section-label">Selected Works</span>
+    <h2 class="section-title">Publications</h2>
+    <p class="section-desc">100+ peer-reviewed articles including publications in Nature, Science, EMBO Journal, and other high-impact journals. H-index 33 (Google Scholar).</p>
+    <div class="pub-filter">
+      <button class="pub-filter-btn active" data-filter="all">All</button>
+      <button class="pub-filter-btn" data-filter="cancer">Cancer</button>
+      <button class="pub-filter-btn" data-filter="epigenetics">Epigenetics</button>
+      <button class="pub-filter-btn" data-filter="reproductive">Reproductive</button>
+      <button class="pub-filter-btn" data-filter="microbiology">Microbiology</button>
+      <button class="pub-filter-btn" data-filter="immunology">Immunology</button>
+      <button class="pub-filter-btn" data-filter="tools">Tools &amp; Methods</button>
+    </div>
+    <div class="pub-list" id="pub-list"></div>
+    <div class="pub-more">
+      <button id="show-more-btn" style="display:none;">Show More Publications</button>
+      <a href="https://scholar.google.com/citations?user=z5iY_6wAAAAJ&hl=en" class="pub-scholar-link" target="_blank">View all on Google Scholar &rarr;</a>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team">
+  <div class="container">
+    <span class="section-label">People</span>
+    <h2 class="section-title">Meet the Team</h2>
+    <p class="section-desc">A computational biology lab specializing in bioinformatics, genomics, and data science.</p>
+    <div class="team-grid">
+      <div>
+        <div class="pi-featured">
+          <img src="mali_photo.jpg" alt="Prof. Mali Salmon-Divon" class="pi-avatar-lg" />
+          <h3>Prof. Mali Salmon-Divon</h3>
+          <p class="role">Principal Investigator | Full Professor<br/>Dept. of Molecular Biology<br/>Head of Medical Sciences Program, School of Biomedical Sciences, Adelson Faculty of Medicine</p>
+          <p class="pi-detail">&#9993; malisa@ariel.ac.il</p>
+          <p class="pi-detail">&#128205; Ariel University, Ariel, Israel</p>
+          <p class="pi-detail">&#127891; Ph.D., Bar-Ilan University (2005)</p>
+          <p class="pi-detail">&#128300; Post-doc: EMBL-EBI, Cambridge (2007-2010)</p>
+          <hr class="pi-divider"/>
+          <div class="h-index-row">
+            <div class="h-index-item"><span class="h-num">33</span><span class="h-src">Google Scholar</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="students-section">
+        <h3>Current Students</h3>
+        <p>Current lab members pursuing advanced degrees in computational biology and bioinformatics.</p>
+        <div class="students-grid">
+          <div class="student-card">
+            <div class="student-avatar">RA</div>
+            <div class="student-info"><h4>Raphael Avneri</h4><p>Epigenetic signature of depression</p><p class="student-cosupervisor">w/ Dr. Elad Lax</p></div>
+            <span class="student-degree phd">Ph.D.</span>
+          </div>
+          <div class="student-card">
+            <div class="student-avatar">OS</div>
+            <div class="student-info"><h4>Oksana Stanevich</h4><p>Evolution of HIV</p><p class="student-cosupervisor">w/ Prof. Shai Ashkenazi</p></div>
+            <span class="student-degree phd">Ph.D.</span>
+          </div>
+          <div class="student-card">
+            <div class="student-avatar">NF</div>
+            <div class="student-info"><h4>Noga Fallach</h4><p>COVID-19 in pregnancy &amp; neurodevelopmental outcomes</p><p class="student-cosupervisor">w/ Dr. Elad Lax</p></div>
+            <span class="student-degree">M.Sc.</span>
+          </div>
+        </div>
+        <button class="alumni-toggle" id="alumni-btn">Show Alumni (15 graduates) &#8964;</button>
+        <div class="alumni-section" id="alumni-section">
+          <p style="font-size:14px;color:var(--gray);margin-bottom:12px;">Former lab members who have completed their degrees.</p>
+          <div class="alumni-grid">
+            <div class="alumni-item"><h5>Edia Stemmer</h5><p>Ph.D. 2025 - Cancer genomics &amp; transcriptomics</p></div>
+            <div class="alumni-item"><h5>Liat Anabel Sinberger</h5><p>Ph.D. 2025 - Breast cancer genomics</p></div>
+            <div class="alumni-item"><h5>Valid Gahramanov</h5><p>Ph.D. 2024 - Cancer drug resistance genomics</p></div>
+            <div class="alumni-item"><h5>Asaf Goldberg</h5><p>M.Sc. 2024 - Breast cancer microbiome</p></div>
+            <div class="alumni-item"><h5>Liat Azani</h5><p>M.Sc. 2024 - Reproductive medicine informatics</p></div>
+            <div class="alumni-item"><h5>Lucas Ka</h5><p>Ph.D. 2023 - Chromatin organization &amp; cell migration</p></div>
+            <div class="alumni-item"><h5>Yuri Koucherov</h5><p>M.Sc. 2021 - Marine microbiome &amp; plastisphere</p></div>
+            <div class="alumni-item"><h5>Kira Kondratyeva</h5><p>Ph.D. 2021 - Bacterial plasmid evolution &amp; AMR</p></div>
+            <div class="alumni-item"><h5>Nehora Levi</h5><p>M.Sc. 2021 - Chromatin biology</p></div>
+            <div class="alumni-item"><h5>Sivan Gershanov</h5><p>Ph.D. 2019 - Medulloblastoma genomics</p></div>
+            <div class="alumni-item"><h5>Pola Smirin-Yosef</h5><p>Ph.D. 2019 - Genomics of rare diseases</p></div>
+            <div class="alumni-item"><h5>Sne Morag</h5><p>M.Sc. 2019 - Benford's Law in genomics</p></div>
+            <div class="alumni-item"><h5>Tamar Nechushtan</h5><p>M.Sc. 2018 - Bioinformatics</p></div>
+            <div class="alumni-item"><h5>Tamar Segal</h5><p>M.Sc. 2017 - Chromatin &amp; cell migration</p></div>
+            <div class="alumni-item"><h5>Hodaya Bruner</h5><p>M.Sc. 2017 - Computational biology</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEACHING -->
+<section id="teaching">
+  <div class="container">
+    <span class="section-label">Education</span>
+    <h2 class="section-title">Teaching</h2>
+    <p class="section-desc">Courses spanning undergraduate, graduate, pre-med, and medical education - bringing computational thinking to life science students at Ariel University.</p>
+    <div class="courses-grid">
+      <div class="course-card">
+        <div class="course-num">01</div>
+        <div class="course-info"><h4>Bioinformatics</h4><p>Foundations of sequence analysis, genome annotation, and computational tools for biological data.</p><span class="course-level level-ug">Undergraduate</span></div>
+      </div>
+      <div class="course-card">
+        <div class="course-num">02</div>
+        <div class="course-info"><h4>Advanced Bioinformatics</h4><p>Next-generation sequencing data analysis: RNA-seq, ChIP-seq, variant calling pipelines.</p><span class="course-level level-grad">Graduate</span></div>
+      </div>
+      <div class="course-card">
+        <div class="course-num">03</div>
+        <div class="course-info"><h4>Human Genomics</h4><p>Structure and function of the human genome, genetic variation, GWAS, and personalized medicine.</p><span class="course-level level-ug">Undergraduate</span></div>
+      </div>
+      <div class="course-card">
+        <div class="course-num">04</div>
+        <div class="course-info"><h4>Computing in R</h4><p>Statistical computing and visualization with R for biological data analysis.</p><span class="course-level level-ug">Undergraduate</span></div>
+      </div>
+      <div class="course-card">
+        <div class="course-num">05</div>
+        <div class="course-info"><h4>Bioinformatics &amp; Medical Data Mining</h4><p>Applied computational analysis of clinical and genomic datasets for medical students.</p><span class="course-level level-med">Medical School</span></div>
+      </div>
+      <div class="course-card">
+        <div class="course-num">06</div>
+        <div class="course-info"><h4>Introduction to Computing &amp; Programming</h4><p>Foundational programming for pre-medical students entering data-rich medical practice.</p><span class="course-level level-ug">Pre-Med</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEWS - auto-generated from JS publications data -->
+<section id="news">
+  <div class="container">
+    <span class="section-label">Lab News</span>
+    <p class="section-desc">The latest from the Functional Bioinformatics Lab.</p>
+    <div class="news-grid" id="news-grid"></div>
+  </div>
+</section>
+
+<!-- CONTACT / JOIN -->
+<section id="contact">
+  <div class="container">
+    <span class="section-label">Get in Touch</span>
+    <h2 class="section-title">Join the Lab</h2>
+    <div class="contact-grid">
+      <div>
+        <p class="contact-desc">We welcome applications from motivated M.Sc. and Ph.D. students, postdoctoral researchers, and research collaborators. If you are passionate about computational biology, genomics, or AI in medicine - we want to hear from you.</p>
+        <div class="contact-items">
+          <div class="contact-item">
+            <div class="contact-icon">&#9993;</div>
+            <div class="contact-text"><strong>Email</strong>malisa@ariel.ac.il</div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">&#128205;</div>
+            <div class="contact-text"><strong>Location</strong>Department of Molecular Biology, Ariel University, Ariel, Israel</div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">&#128279;</div>
+            <div class="contact-text"><strong>University Profile</strong>ariel.ac.il/wp/fbl</div>
+          </div>
+        </div>
+      </div>
+      <div class="join-box">
+        <h3>Open Positions</h3>
+        <p>We are recruiting highly motivated students and postdocs interested in bioinformatics, cancer genomics, and computational medicine.</p>
+        <div class="join-positions">
+          <div class="position-item"><span class="position-name">Ph.D. Student - Cancer Genomics</span><span class="position-tag">Open</span></div>
+          <div class="position-item"><span class="position-name">M.Sc. Student - Bioinformatics</span><span class="position-tag">Open</span></div>
+          <div class="position-item"><span class="position-name">Postdoctoral Researcher</span><span class="position-tag">Open</span></div>
+        </div>
+        <a href="mailto:malisa@ariel.ac.il" class="btn-primary" style="width:100%;text-align:center;display:block;">Send Your Application</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand"><span>Functional Bioinformatics Lab</span> - Ariel University, Israel</div>
+    <ul class="footer-links">
+      <li><a href="#research">Research</a></li>
+      <li><a href="#publications">Publications</a></li>
+      <li><a href="#team">Team</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <p class="footer-copy">&copy; 2026 Salmon-Divon Lab, Ariel University</p>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// PUBLICATIONS DATA
+// Citation counts are fetched and updated by update_citations.py
+// Last updated: 2026-06-15
+// ============================================================
+const PUBLICATIONS = [
+  { year:2026, date:"May 2026", title:"Sex-Specific Transcriptomic Profiles in Psoriatic Lesions: A Large-Scale Integrative Study", authors:"Stemmer E, Sinberger LA, Lax T, Shrem G, Mor I, Salmon-Divon M", journal:"Int J Mol Sci", doi:"10.3390/ijms27104439", citations:0, categories:["immunology"] },
+  { year:2026, date:"Apr 2026", title:"Impact of milk consumption patterns on cow's milk sensitization and allergy in at-risk children", authors:"Azani L, Salmon-Divon M, Gerlitz G, Brandwein M", journal:"World Allergy Organ J", doi:"10.1016/j.waojou.2026.101376", citations:0, categories:["immunology"] },
+  { year:2026, date:"Jan 2026", title:"Thyroid Hormone T3 Induces DNA Damage Response in Breast Cancer Cells", authors:"Movshovitz S, ..., Salmon-Divon M", journal:"International Journal of Molecular Sciences", doi:"10.3390/IJMS27020668", citations:0, categories:["cancer"] },
+  { year:2025, date:"Oct 2025", title:"Fertility treatment after sexual trauma", authors:"Feferkorn I, ..., Salmon-Divon M", journal:"Reproductive BioMedicine Online", doi:"10.1016/J.RBMO.2025.105022", citations:1, categories:["reproductive"] },
+  { year:2025, date:"Sep 2025", title:"Early Risk Prediction for Biologic Therapy in Psoriasis Using Machine Learning Models Based on Routine Health Records", authors:"Lax T, ..., Salmon-Divon M*", journal:"Journal of Clinical Medicine", doi:"10.3390/JCM14186421", citations:1, categories:["immunology"] },
+  { year:2025, date:"Sep 2025", title:"Revealing the Angiogenic Signature of FH-Deficient Breast Cancer: Genomic Profiling and Clinical Implications", authors:"Sinberger L, ..., Salmon-Divon M*", journal:"Cancers", doi:"10.3390/CANCERS17182942", citations:1, categories:["cancer"] },
+  { year:2025, date:"Jun 2025", title:"Exploring the Impact of Gender and Age of Onset on Psoriasis Treatment Management", authors:"Lax T, ..., Salmon-Divon M*", journal:"Journal of Clinical Medicine", doi:"10.3390/JCM14124090", citations:0, categories:["immunology"] },
+  { year:2025, date:"Feb 2025", title:"The effect of methylation on the let-7-BCL2L1-BCL2 axis and the potential use of hypomethylating and BH3 mimetic drugs in histiocytic neoplasms", authors:"Salmon-Divon M, ... et al.", journal:"Leukemia", doi:"10.1038/S41375-024-02459-5", citations:5, categories:["cancer","epigenetics"] },
+  { year:2025, date:"Jan 2025", title:"Unlocking prognostic potential: A genomic signature of caloric restriction in patients with epithelial ovarian cancer", authors:"Tal O, Zahavi T, Sinberger LA, Salmon-Divon M*", journal:"Plos One", doi:"10.1371/JOURNAL.PONE.0317502", citations:1, categories:["cancer"] },
+  { year:2024, date:"Dec 2024", title:"Regulation of cholesterol biosynthesis by CTCF and H3K27 methylation is critical for cell migration", authors:"Kaczmarczyk L, ..., Salmon-Divon M*", journal:"European Journal of Cell Biology", doi:"10.1016/J.EJCB.2024.151454", citations:5, categories:["epigenetics"] },
+  { year:2024, date:"May 2024", title:"Non-coding RNAs regulate novel signaling pathways in AL amyloidosis that are targetable by FDA approved drugs", authors:"Salmon-Divon M et al.", journal:"Amyloid: the International Journal of Experimental and Clinical Investigation: the Official Journal of the International Society of Amyloidosis", doi:"", citations:0, categories:["cancer"] },
+  { year:2024, date:"Mar 2024", title:"Exploring potential biomarkers and therapeutic targets in inflammatory bowel disease: insights from a mega-analysis approach", authors:"Stemmer E, Zahavi T, Kellerman M, Sinberger LA, Shrem G, Salmon-Divon M*", journal:"Frontiers in Immunology", doi:"10.3389/FIMMU.2024.1353402", citations:10, categories:["immunology"] },
+  { year:2023, date:"Nov 2023", title:"Coexistent ARID1A-PIK3CA mutations are associated with immune-related pathways in luminal breast cancer", authors:"Sinberger LA, Zahavi T, Sonnenblick A, Salmon-Divon M*", journal:"Scientific Reports", doi:"10.1038/S41598-023-48002-X", citations:9, categories:["cancer"] },
+  { year:2023, date:"Oct 2023", title:"Impact of the OncotypeDX score and HER2 RNA PCR levels on HER2-low IHC levels in primary and metastasized tumors", authors:"Feldman D, ..., Salmon-Divon M", journal:"BMC Cancer", doi:"10.1186/S12885-023-11530-W", citations:6, categories:["cancer"] },
+  { year:2023, date:"May 2023", title:"Evolution of Resistance to Irinotecan in Cancer Cells Involves Generation of Topoisomerase-Guided Mutations in Non-Coding Genome That Reduce the Chances of DNA Breaks", authors:"Kumar S, ..., Salmon-Divon M", journal:"International Journal of Molecular Sciences", doi:"10.3390/IJMS24108717", citations:12, categories:["cancer"] },
+  { year:2023, date:"Apr 2023", title:"AL amyloidosis clonal plasma cells are regulated by microRNAs and dependent on anti-apoptotic BCL2 family members", authors:"Fishov H, ..., Salmon-Divon M", journal:"Cancer Medicine", doi:"10.1002/CAM4.5621", citations:8, categories:["cancer"] },
+  { year:2022, date:"Oct 2022", title:"Alpelisib Efficacy in Hormone Receptor-Positive HER2-Negative PIK3CA-Mutant Advanced Breast Cancer Post-Everolimus Treatment", authors:"Raphael A, ..., Salmon-Divon M", journal:"Genes", doi:"10.3390/GENES13101763", citations:6, categories:["cancer"] },
+  { year:2022, date:"Sep 2022", title:"Geographic variation in semen parameters from data used for the World Health Organization semen analysis reference ranges", authors:"Feferkorn I, Azani L, ..., Salmon-Divon M*, Dahan MH*", journal:"Fertility and Sterility", doi:"10.1016/J.FERTNSTERT.2022.05.037", citations:13, categories:["reproductive"] },
+  { year:2022, date:"Sep 2022", title:"Integration of the Connectivity Map and Pathway Analysis to Predict Plant Extract\'s Medicinal Properties-The Study Case of Sarcopoterium spinosum L", authors:"Gahramanov V, ..., Salmon-Divon M", journal:"Plants", doi:"10.3390/PLANTS11172195", citations:0, categories:["cancer"] },
+  { year:2022, date:"Aug 2022", title:"Editorial: Omics approach to study the biology and virulence of microorganisms causing zoonotic diseases", authors:"Salmon-Divon M, He Y, Kornspan D, Wen Z", journal:"Frontiers in Microbiology", doi:"10.3389/FMICB.2022.988983", citations:1, categories:["microbiology"] },
+  { year:2022, date:"Jun 2022", title:"Effect of Malignancy on Semen Parameters", authors:"Shrem G, ..., Salmon-Divon M", journal:"Life", doi:"10.3390/LIFE12060922", citations:7, categories:["reproductive"] },
+  { year:2022, date:"May 2022", title:"An evaluation of changes over time in the semen parameters data used for the World Health Organization semen analysis reference ranges", authors:"Feferkorn I, ..., Salmon-Divon M", journal:"Andrology", doi:"10.1111/ANDR.13150", citations:8, categories:["reproductive"] },
+  { year:2022, date:"Apr 2022", title:"High-Resolution Screening for Marine Prokaryotes and Eukaryotes With Selective Preference for Polyethylene and Polyethylene Terephthalate Surfaces", authors:"Marsay K, ..., Salmon-Divon M", journal:"Frontiers in Microbiology", doi:"10.3389/FMICB.2022.845144", citations:23, categories:["microbiology"] },
+  { year:2022, date:"Mar 2022", title:"CTCF supports preferentially short lamina-associated domains", authors:"Kaczmarczyk LS, Levi N, Segal T, Salmon-Divon M*, Gerlitz G*", journal:"Chromosome Research", doi:"10.1007/S10577-022-09686-5", citations:14, categories:["epigenetics"] },
+  { year:2022, date:"Feb 2022", title:"Uncommon side effects of common drugs in patients with familial dysautonomia", authors:"Perl L, ..., Salmon-Divon M", journal:"Pharmacoepidemiology and Drug Safety", doi:"10.1002/PDS.5326", citations:1, categories:["cancer"] },
+  { year:2022, date:"Jan 2022", title:"Influence of Maternal Age and Ovarian Reserve on the Decision to Continue or to Cancel IVF Cycles in Patients with One or Two Large Follicles: a Dual Effect", authors:"Shrem G, ..., Salmon-Divon M*", journal:"Reproductive Sciences", doi:"10.1007/S43032-021-00649-5", citations:6, categories:["reproductive"] },
+  { year:2021, date:"Nov 2021", title:"Epigenetic signature of chronic low back pain in human T cells", authors:"Grégoire S, ..., Salmon-Divon M", journal:"PAIN Reports", doi:"10.1097/PR9.0000000000000960", citations:21, categories:["epigenetics"] },
+  { year:2021, date:"Nov 2021", title:"Hope for male fecundity: clinically insignificant changes in semen parameters over 10 years at a single clinic while assessing an infertility population", authors:"Feferkorn I, ..., Salmon-Divon M", journal:"Journal of Assisted Reproduction and Genetics", doi:"10.1007/S10815-021-02298-8", citations:2, categories:["reproductive"] },
+  { year:2021, date:"Sep 2021", title:"Non-Coding RNAs in Normal B-Cell Development and in Mantle Cell Lymphoma: From Molecular Mechanism to Biomarker and Therapeutic Agent Potential", authors:"Kersy O, Salmon-Divon M, Shpilberg O, Hershkovitz-Rokah O", journal:"International Journal of Molecular Sciences", doi:"10.3390/IJMS22179490", citations:11, categories:["cancer"] },
+  { year:2021, date:"Jul 2021", title:"The methyl donor S-adenosyl methionine reverses the DNA methylation signature of chronic neuropathic pain in mouse frontal cortex", authors:"Topham L, ..., Salmon-Divon M", journal:"PAIN Reports", doi:"10.1097/PR9.0000000000000944", citations:17, categories:["epigenetics"] },
+  { year:2021, date:"Jul 2021", title:"Genomic evidence supports an independent history of Levantine and Eurasian grapevines", authors:"Sivan A, ..., Salmon-Divon M", journal:"Plants, People, Planet", doi:"10.1002/PPP3.10197", citations:21, categories:["microbiology"] },
+  { year:2021, date:"Jun 2021", title:"Classifying medulloblastoma subgroups based on small, clinically achievable gene sets", authors:"Özsomer A et al.", journal:"Frontiers in Oncology", doi:"10.3389/FONC.2021.637482", citations:0, categories:["cancer"] },
+  { year:2021, date:"May 2021", title:"Heparanase: a potential marker of worse prognosis in estrogen receptor-positive breast cancer", authors:"Zahavi T*, Salmon-Divon M*, Salgado R, Elkin M, ... et al.", journal:"npj Breast Cancer", doi:"10.1038/S41523-021-00277-X", citations:20, categories:["cancer"] },
+  { year:2021, date:"May 2021", title:"Differences in RNA and microRNA Expression Between PTCH1-and SUFU-mutated Medulloblastoma", authors:"Fidalgo N et al.", journal:"Cancer Genomics and Proteomics", doi:"10.21873/CGP.20264", citations:0, categories:["cancer"] },
+  { year:2021, date:"Mar 2021", title:"Gut microbiota determines the social behavior of mice and induces metabolic and inflammatory changes in their adipose tissue", authors:"Agranyoni O, ..., Salmon-Divon M", journal:"Npj Biofilms and Microbiomes", doi:"10.1038/S41522-021-00193-9", citations:73, categories:["microbiology"] },
+  { year:2021, date:"Mar 2021", title:"A study of normal copy number variations in Israeli population", authors:"Maya I, ..., Salmon-Divon M", journal:"Human Genetics", doi:"10.1007/S00439-020-02225-4", citations:2, categories:["cancer"] },
+  { year:2020, date:"Dec 2020", title:"Genomic Analysis of Natural Rough Brucella melitensis Rev.1 Vaccine Strains: Identification and Characterization of Mutations in Key Genes Associated with Bacterial LPS Biosynthesis and Virulence", authors:"Kornspan D, ..., Salmon-Divon M", journal:"International Journal of Molecular Sciences", doi:"10.3390/IJMS21249341", citations:10, categories:["microbiology"] },
+  { year:2020, date:"Oct 2020", title:"The transition from acute to chronic pain: dynamic epigenetic reprogramming of the mouse prefrontal cortex up to 1 year after nerve injury", authors:"Topham L, ..., Salmon-Divon M", journal:"PAIN", doi:"10.1097/J.PAIN.0000000000001917", citations:41, categories:["epigenetics"] },
+  { year:2020, date:"Oct 2020", title:"An age-based sperm nomogram: the McGill reference guide", authors:"Salmon-Divon M*, Shrem G, Balayla J, ... Dahan MH", journal:"Human Reproduction", doi:"10.1093/HUMREP/DEAA196", citations:16, categories:["reproductive"] },
+  { year:2020, date:"Oct 2020", title:"Increased Lamin B1 Levels Promote Cell Migration by Altering Perinuclear Actin Organization", authors:"Fracchia A, Asraf T, Salmon-Divon M, Gerlitz G", journal:"Cells", doi:"10.3390/CELLS9102161", citations:32, categories:["epigenetics"] },
+  { year:2020, date:"Sep 2020", title:"The Acidic Stress Response of the Intracellular PathogenBrucella melitensis: New Insights from a Comparative, Genome-Wide Transcriptome Analysis", authors:"Kornspan D, Zahavi T, Salmon-Divon M", journal:"Genes", doi:"10.3390/GENES11091016", citations:3, categories:["microbiology"] },
+  { year:2020, date:"Jul 2020", title:"Reactive stroma and trastuzumab resistance in HER2-positive early breast cancer", authors:"Sonnenblick A, ..., Salmon-Divon M", journal:"International Journal of Cancer", doi:"10.1002/IJC.32859", citations:25, categories:["cancer"] },
+  { year:2020, date:"Jan 2020", title:"Meta-analysis of Pandemic Escherichia coli ST131 Plasmidome Proves Restricted Plasmid-clade Associations", authors:"Kondratyeva K, Salmon-Divon M, Navon-Venezia S", journal:"Scientific Reports", doi:"10.1038/S41598-019-56763-7", citations:67, categories:["microbiology"] },
+  { year:2020, date:"Jan 2020", title:"Transcriptomic analysis of smooth versus rough Brucella melitensis Rev.1 vaccine strains reveals insights into virulence attenuation", authors:"Salmon-Divon M, Kornspan D", journal:"International Journal of Medical Microbiology", doi:"10.1016/J.IJMM.2019.151363", citations:7, categories:["microbiology"] },
+  { year:2019, date:"2019", title:"Risk gene-set and pathways in 22q11.2 deletion-related schizophrenia: a genealogical molecular approach", authors:"Τσιριγώτης Α et al.", journal:"Translational Psychiatry", doi:"10.1038/S41398-018-0354-9", citations:0, categories:["cancer"] },
+  { year:2019, date:"2019", title:"Transcriptomic Analysis of the Brucella melitensis Rev.1 Vaccine Strain in an Acidic Environment: Insights Into Virulence Attenuation", authors:"Salmon-Divon M*, Zahavi T, Kornspan D", journal:"Frontiers in Microbiology", doi:"10.3389/FMICB.2019.00250", citations:19, categories:["microbiology"] },
+  { year:2019, date:"2019", title:"Characterizing Human Cell Types and Tissue Origin Using the Benford Law", authors:"Morag S, Salmon-Divon M", journal:"Cells", doi:"10.3390/CELLS8091004", citations:8, categories:["tools"] },
+  { year:2018, date:"Dec 2018", title:"Pathogen Detection Using Frequency Domain Fluorescent Lifetime Measurements", authors:"Yahav G, ..., Salmon-Divon M", journal:"IEEE Transactions on Biomedical Engineering", doi:"10.1109/TBME.2018.2814597", citations:13, categories:["microbiology"] },
+  { year:2018, date:"Nov 2018", title:"The Heterochromatin Landscape in Migrating Cells and the Importance of H3K27me3 for Associated Transcriptome Alterations", authors:"Segal T, Salmon-Divon M, Gerlitz G", journal:"Cells", doi:"10.3390/CELLS7110205", citations:35, categories:["epigenetics"] },
+  { year:2018, date:"Oct 2018", title:"Characterization of the miRNA regulators of the human ovulatory cascade", authors:"Yerushalmi G, ..., Salmon-Divon M", journal:"Scientific Reports", doi:"10.1038/S41598-018-33807-Y", citations:31, categories:["reproductive"] },
+  { year:2018, date:"Mar 2018", title:"SYK expression level distinguishes control from BRCAI-mutated lymphocytes", authors:"Zahavi T, ..., Salmon-Divon M", journal:"Cancer Management and Research", doi:"10.2147/CMAR.S156359", citations:5, categories:["cancer"] },
+  { year:2018, date:"Feb 2018", title:"MicroRNA-mRNA expression profiles associated with medulloblastoma subgroup 4", authors:"Gershanov S, ..., Salmon-Divon M", journal:"Cancer Management and Research", doi:"10.2147/CMAR.S156709", citations:13, categories:["cancer"] },
+  { year:2018, date:"2018", title:"Complete Genome Sequence of the Live Attenuated Vaccine Strain Brucella melitensis Rev. 1", authors:"Salmon-Divon M, ... et al.", journal:"Microbiology Resource Announcements", doi:"10.1128/GENOMEA.00175-18", citations:11, categories:["microbiology"] },
+  { year:2018, date:"2018", title:"Genomic analysis of the original Elberg Brucella melitensis Rev.1 vaccine strain reveals insights into virulence attenuation", authors:"Salmon-Divon M, Yeheskel A, Kornspan D", journal:"Virulence", doi:"10.1080/21505594.2018.1511677", citations:13, categories:["microbiology"] },
+  { year:2018, date:"2018", title:"microRNA-microRNA-mRNA Expression Profiles can Differentiate Medulloblastoma Subgroup 3 and 4", authors:"Salmon-Divon M et al.", journal:"Pediatric Blood and Cancer", doi:"", citations:0, categories:["cancer"] },
+  { year:2018, date:"2018", title:"Tidal and diel orchestration of behaviour and gene expression in an intertidal mollusc", authors:"Schnytzer Y, ..., Salmon-Divon M", journal:"Scientific Reports", doi:"10.1038/S41598-018-23167-Y", citations:62, categories:["microbiology"] },
+  { year:2017, date:"Nov 2017", title:"In Vitro Exposure of Human Luteinized Mural Granulosa Cells to Dibutyl Phthalate Affects Global Gene Expression", authors:"Adir M, ..., Salmon-Divon M", journal:"Toxicological Sciences", doi:"10.1093/TOXSCI/KFX170", citations:16, categories:["reproductive"] },
+  { year:2017, date:"Jun 2017", title:"Fluorescence Lifetime Imaging Microscopy, a Novel Diagnostic Tool for Metastatic Cell Detection in the Cerebrospinal Fluid of Children with Medulloblastoma", authors:"Gershanov S, ..., Salmon-Divon M", journal:"Scientific Reports", doi:"10.1038/S41598-017-03892-6", citations:35, categories:["cancer"] },
+  { year:2017, date:"May 2017", title:"CircosVCF: circos visualization of whole-genome sequence variations stored in VCF files", authors:"Drori E, Levy D, Smirin-Yosef P, Rahimi O, Salmon-Divon M*", journal:"Bioinformatics", doi:"10.1093/BIOINFORMATICS/BTW834", citations:36, categories:["tools"] },
+  { year:2017, date:"Mar 2017", title:"X-linked elliptocytosis with impaired growth is related to mutated AMMECR1", authors:"Basel-Vanagaite L, ..., Salmon-Divon M", journal:"Gene", doi:"10.1016/J.GENE.2017.01.001", citations:8, categories:["cancer"] },
+  { year:2017, date:"Mar 2017", title:"Collection and characterization of grapevine genetic resources (Vitis vinifera) in the Holy Land, towards the renewal of ancient winemaking practices", authors:"Drori E, ..., Salmon-Divon M", journal:"Scientific Reports", doi:"10.1038/SREP44463", citations:45, categories:["microbiology"] },
+  { year:2017, date:"Feb 2017", title:"Mediterranean versus Red sea corals facing climate change, a transcriptome analysis", authors:"Maor-Landaw K, ..., Salmon-Divon M", journal:"Scientific Reports", doi:"10.1038/SREP42405", citations:30, categories:["microbiology"] },
+  { year:2017, date:"Feb 2017", title:"A Biallelic Mutation in the Homologous Recombination Repair Gene SPIDR Is Associated With Human Gonadal Dysgenesis", authors:"Smirin-Yosef P, ..., Salmon-Divon M", journal:"The Journal of Clinical Endocrinology & Metabolism", doi:"10.1210/JC.2016-2714", citations:68, categories:["cancer"] },
+  { year:2017, date:"2017", title:"Whole genome mapping of heterochromatin in migrating cells and its effects on transcription", authors:"Salmon-Divon M et al.", journal:"The FEBS Journal", doi:"", citations:0, categories:["epigenetics"] },
+  { year:2016, date:"Nov 2016", title:"Utilizing fluorescent life time imaging microscopy technology for identify carriers of BRCA2 mutation", authors:"Zahavi T, ..., Salmon-Divon M*", journal:"Biochemical and Biophysical Research Communications", doi:"10.1016/J.BBRC.2016.10.013", citations:14, categories:["cancer"] },
+  { year:2016, date:"Feb 2016", title:"The dynamic N1-methyladenosine methylome in eukaryotic messenger RNA", authors:"Dominissini D, ..., Salmon-Divon M", journal:"Nature Reviews Bioengineering", doi:"10.1038/NATURE16998", citations:1037, categories:["epigenetics"], highlight:true },
+  { year:2016, date:"Jan 2016", title:"Draft Genome Sequences of Two Multidrug-Resistant Extended-Spectrum-β-Lactamase-Producing Klebsiella pneumoniae Strains Causing Bloodstream Infections", authors:"Carasso E, ..., Salmon-Divon M", journal:"Genome Announcements", doi:"10.1128/GENOMEA.01533-15", citations:1, categories:["microbiology"] },
+  { year:2016, date:"2016", title:"Elucidating tissue specific genes using the Benford distribution", authors:"Karthik D, ..., Salmon-Divon M", journal:"BMC Genomics", doi:"10.1186/S12864-016-2921-X", citations:6, categories:["tools"] },
+  { year:2015, date:"May 2015", title:"Synapsin IIb as a functional marker of submissive behavior", authors:"Nesher E, ..., Salmon-Divon M", journal:"Scientific Reports", doi:"10.1038/SREP10287", citations:20, categories:["cancer"] },
+  { year:2015, date:"Mar 2015", title:"VennBLAST-Whole transcriptome comparison and visualization tool", authors:"Zahavi T, ..., Salmon-Divon M", journal:"Genomics", doi:"10.1016/J.YGENO.2014.12.004", citations:5, categories:["tools"] },
+  { year:2015, date:"Mar 2015", title:"Lethal neonatal rigidity and multifocal seizure syndrome - Report of another family with a BRAT1 mutation", authors:"Straussberg R, ..., Salmon-Divon M", journal:"European Journal of Paediatric Neurology", doi:"10.1016/J.EJPN.2014.11.004", citations:30, categories:["cancer"] },
+  { year:2015, date:"Feb 2015", title:"m6A mRNA methylation facilitates resolution of naive pluripotency toward differentiation", authors:"Geula S, ..., Salmon-Divon M", journal:"Science", doi:"10.1126/SCIENCE.1261417", citations:1611, categories:["epigenetics"], highlight:true },
+  { year:2015, date:"2015", title:"Homozygous MED25 mutation implicated in eye-intellectual disability syndrome", authors:"Basel-Vanagaite L, ..., Salmon-Divon M", journal:"Human Genetics", doi:"10.1007/S00439-015-1541-X", citations:30, categories:["cancer"] },
+  { year:2014, date:"Aug 2014", title:"Characterization of the human cumulus cell transcriptome during final follicular maturation and ovulation", authors:"Yerushalmi G, ..., Salmon-Divon M", journal:"Molecular Human Reproduction", doi:"10.1093/MOLEHR/GAU031", citations:81, categories:["reproductive"] },
+  { year:2014, date:"Apr 2014", title:"A unique megaplasmid contributes to stress tolerance and pathogenicity of an emergent Salmonella enterica serovar Infantis strain", authors:"Aviv G, ..., Salmon-Divon M", journal:"Environmental Microbiology", doi:"10.1111/1462-2920.12351", citations:222, categories:["microbiology"] },
+  { year:2014, date:"Feb 2014", title:"Transcriptome Analysis of the Scleractinian Coral Stylophora pistillata", authors:"Karako-Lampert S, ..., Salmon-Divon M", journal:"Plos One", doi:"10.1371/JOURNAL.PONE.0088615", citations:57, categories:["microbiology"] },
+  { year:2013, date:"Jun 2013", title:"Carriers of degenerative retinal diseases can be easily identified using target capture next generation sequencing", authors:"Salmon-Divon M et al.", journal:"Investigative Ophthalmology & Visual Science", doi:"", citations:0, categories:["cancer"] },
+  { year:2013, date:"May 2013", title:"The shaping and functional consequences of the microRNA landscape in breast cancer", authors:"Dvinge H, ..., Salmon-Divon M", journal:"Nature", doi:"10.1038/NATURE12108", citations:403, categories:["cancer","epigenetics"], highlight:true },
+  { year:2013, date:"Feb 2013", title:"Determination of Molecular Markers for BRCA1 and BRCA2 Heterozygosity Using Gene Expression Profiling", authors:"Salmon A, ..., Salmon-Divon M", journal:"Cancer Prevention Research", doi:"10.1158/1940-6207.CAPR-12-0105", citations:10, categories:["cancer"] },
+  { year:2013, date:"2013", title:"Transcriptome-wide mapping of N-6-methyladenosine by m(6)A-seq based on immunocapturing and massively parallel sequencing", authors:"Dominissini D, ..., Salmon-Divon M", journal:"Nature Protocols", doi:"10.1038/NPROT.2012.148", citations:771, categories:["epigenetics","tools"], highlight:true },
+  { year:2012, date:"Jul 2012", title:"Genome-wide characterization of Foxa2 targets reveals upregulation of floor plate genes and repression of ventrolateral genes in midbrain dopaminergic progenitors", authors:"Metzakopian E, ..., Salmon-Divon M", journal:"Development", doi:"10.1242/DEV.081034", citations:53, categories:["cancer"] },
+  { year:2012, date:"Feb 2012", title:"NuRD-mediated deacetylation of H3K27 facilitates recruitment of Polycomb Repressive Complex 2 to direct gene repression", authors:"Reynolds N, ..., Salmon-Divon M", journal:"The EMBO Journal", doi:"10.1038/EMBOJ.2011.431", citations:261, categories:["epigenetics"], highlight:true },
+  { year:2012, date:"2012", title:"Determination of molecular markers for BRCA1 and BRCA2 heterozygosity using gene expression profiling", authors:"Salmon-Divon M et al.", journal:"Tumor Biology", doi:"", citations:0, categories:["cancer"] },
+  { year:2012, date:"2012", title:"Topology of the human and mouse m(6)A RNA methylomes revealed by m(6)A-seq", authors:"Dominissini D, ..., Salmon-Divon M", journal:"Nature", doi:"10.1038/NATURE11112", citations:5036, categories:["epigenetics"], highlight:true },
+  { year:2011, date:"Jun 2011", title:"Simulations of the NK Cell Immune Synapse Reveal that Activation Thresholds Can Be Established by Inhibitory Receptors Acting Locally", authors:"Kaplan A, ..., Salmon-Divon M", journal:"The Journal of Immunology", doi:"10.4049/JIMMUNOL.1002208", citations:17, categories:["microbiology"] },
+  { year:2010, date:"Oct 2010", title:"Natural Killer Cell Tolerance Persists Despite Significant Reduction of Self MHC Class I on Normal Target Cells in Mice", authors:"Brodin P, ..., Salmon-Divon M", journal:"Plos One", doi:"10.1371/JOURNAL.PONE.0013174", citations:25, categories:["microbiology"] },
+  { year:2010, date:"May 2010", title:"Systematic comparison of microarray profiling, real-time PCR, and next-generation sequencing technologies for measuring differential microRNA expression", authors:"Git A*, Dvinge H*, Salmon-Divon M*, ... Caldas C", journal:"RNA", doi:"10.1261/RNA.1947110", citations:677, categories:["tools"] },
+  { year:2010, date:"2010", title:"PeakAnalyzer: Genome-wide annotation of chromatin binding and modification loci", authors:"Salmon-Divon M*, Dvinge H, Tammoja K, Bertone P", journal:"BMC Bioinformatics", doi:"10.1186/1471-2105-11-415", citations:254, categories:["tools","epigenetics"] },
+  { year:2009, date:"Jun 2009", title:"Probing Natural Killer Cell Education by Ly49 Receptor Expression Analysis and Computational Modelling in Single MHC Class I Mice", authors:"Johansson S, ..., Salmon-Divon M", journal:"Plos One", doi:"10.1371/JOURNAL.PONE.0006046", citations:32, categories:["microbiology"] },
+  { year:2009, date:"Apr 2009", title:"Multiple roles for polypyrimidine tract binding (PTB) proteins in trypanosome RNA metabolism", authors:"Stern M, ..., Salmon-Divon M", journal:"RNA", doi:"10.1261/RNA.1230209", citations:93, categories:["microbiology"] },
+  { year:2008, date:"2008", title:"Identification of the heptameric Lsm complex that binds U6 snRNA in Trypanosoma brucei", authors:"Tkacz I, Cohen S, Salmon-Divon M, Michaeli S", journal:"Molecular and Biochemical Parasitology", doi:"10.1016/J.MOLBIOPARA.2008.03.003", citations:29, categories:["microbiology"] },
+  { year:2008, date:"2008", title:"Elucidating the role of C/D snoRNA in rRNA processing and modification in Trypanosoma brucei", authors:"Barth S, ..., Salmon-Divon M", journal:"Eukaryotic Cell", doi:"10.1128/EC.00215-07", citations:50, categories:["microbiology"] },
+  { year:2008, date:"2008", title:"Yeast linker histone Hho1p is required for efficient RNA polymerase I processivity and transcriptional silencing at the ribosomal DNA", authors:"Levy A, ..., Salmon-Divon M", journal:"Proceedings of the National Academy of Sciences", doi:"10.1073/PNAS.0709403105", citations:26, categories:["microbiology"] },
+  { year:2007, date:"Jan 2007", title:"Identification of novel snRNA-specific Sm proteins that bind selectively to U2 and U4 snRNAs in Trypanosoma brucei", authors:"Tkacz I, ..., Salmon-Divon M", journal:"RNA", doi:"10.1261/RNA.174307", citations:38, categories:["microbiology"] },
+  { year:2005, date:"Apr 2005", title:"Natural killer cell education in mice with single or multiple major histocompatibility complex class I molecules", authors:"Johansson S, ..., Salmon-Divon M", journal:"Journal of Experimental Medicine", doi:"10.1084/JEM.20050167", citations:154, categories:["microbiology"] },
+  { year:2005, date:"Feb 2005", title:"Computational modeling of human natural killer cell development suggests a selection process regulating coexpression of KIR with CD94/NKG2A", authors:"Salmon-Divon M, ... et al.", journal:"Molecular Immunology", doi:"10.1016/J.MOLIMM.2004.07.018", citations:9, categories:["microbiology"] },
+  { year:2004, date:"May 2004", title:"Mechanistic aspects of Escherichia coli photodynamic inactivation by cationic tetra-meso(N-methylpyridyl)porphine", authors:"Salmon-Divon M, Nitzan Y, Malik Z", journal:"Photochemical & Photobiological Sciences", doi:"10.1039/B315627N", citations:98, categories:["microbiology"] },
+  { year:2004, date:"2004", title:"ALA induced photodynamic effects on Gram positive and negative bacteria", authors:"Nitzan Y, Salmon-Divon M, Shporen E, Malik Z", journal:"Photochemical & Photobiological Sciences", doi:"10.1039/B315633H", citations:184, categories:["microbiology"] },
+  { year:2003, date:"2003", title:"Generation of the natural killer cell repertoire: The sequential vs. the two-step selection model", authors:"Salmon-Divon M", journal:"Bulletin of Mathematical Biology", doi:"10.1016/S0092-8240(02)00093-9", citations:12, categories:["microbiology"] },
+];
+
+// ============================================================
+// RENDER PUBLICATIONS
+// ============================================================
+const INITIAL_SHOW = 8;
+let currentFilter = 'all';
+let showAll = false;
+
+
+function getCitationText(n) {
+  if (n === 0) return '';
+  if (n >= 1000) return `${(n/1000).toFixed(1)}K citations`;
+  return `${n} citations`;
+}
+
+function renderPubs() {
+  const list = document.getElementById('pub-list');
+  const filtered = currentFilter === 'all'
+    ? PUBLICATIONS
+    : PUBLICATIONS.filter(p => p.categories.includes(currentFilter));
+
+  const toShow = showAll ? filtered : filtered.slice(0, INITIAL_SHOW);
+  const showMoreBtn = document.getElementById('show-more-btn');
+
+  list.innerHTML = toShow.map(p => `
+    <div class="pub-item" data-categories="${p.categories.join(' ')}">
+      <div class="pub-year">${p.year}</div>
+      <div class="pub-body">
+        <p class="pub-title">
+          ${p.doi ? `<a href="https://doi.org/${p.doi}" target="_blank" rel="noopener">${p.title}</a>` : p.title}
+        </p>
+        <p class="pub-authors">${p.authors.replace('Salmon-Divon M', '<strong>Salmon-Divon M</strong>')}</p>
+        <div class="pub-meta">
+          <span class="pub-journal">${p.journal}</span>
+
+          ${p.citations > 0 ? `<span class="pub-citations">${getCitationText(p.citations)}</span>` : ''}
+          ${p.doi ? `<a href="https://doi.org/${p.doi}" class="pub-doi" target="_blank" rel="noopener">doi:${p.doi.toLowerCase()}</a>` : ''}
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  if (!showAll && filtered.length > INITIAL_SHOW) {
+    showMoreBtn.style.display = 'inline-block';
+    showMoreBtn.textContent = `Show ${filtered.length - INITIAL_SHOW} More Publications`;
+  } else {
+    showMoreBtn.style.display = 'none';
+  }
+}
+
+document.querySelectorAll('.pub-filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.pub-filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    showAll = false;
+    renderPubs();
+  });
+});
+
+document.getElementById('show-more-btn').addEventListener('click', () => {
+  showAll = true;
+  renderPubs();
+});
+
+// ============================================================
+// RENDER NEWS from 3 most recent publications
+// ============================================================
+const CATEGORY_ICONS = {
+  cancer: '🧬',
+  epigenetics: '⚗️',
+  reproductive: '🔬',
+  microbiology: '🦠',
+  immunology: '🛡️',
+  tools: '🛠️',
+};
+
+function renderNews() {
+  const recent = PUBLICATIONS.slice(0, 3);
+  const grid = document.getElementById('news-grid');
+  grid.innerHTML = recent.map(p => {
+    const icon = CATEGORY_ICONS[p.categories[0]] || '📄';
+    return `
+      <div class="news-card">
+        <div class="news-img">${icon}</div>
+        <div class="news-body">
+          <p class="news-date">${p.date}</p>
+          <p class="news-title">New paper published in <em>${p.journal}</em></p>
+          <p class="news-journal">${p.title}</p>
+          ${p.doi ? `<a href="https://doi.org/${p.doi}" class="news-link" target="_blank" rel="noopener">Read paper &rarr;</a>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// ALUMNI TOGGLE
+// ============================================================
+document.getElementById('alumni-btn').addEventListener('click', function() {
+  const section = document.getElementById('alumni-section');
+  section.classList.toggle('visible');
+  this.textContent = section.classList.contains('visible')
+    ? 'Hide Alumni \u2038'
+    : 'Show Alumni (9 graduates) \u2964';
+});
+
+// ============================================================
+// NAV ACTIVE STATE ON SCROLL
+// ============================================================
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 80) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+}, { passive: true });
+
+// ============================================================
+// INIT
+// ============================================================
+renderPubs();
+renderNews();
+</script>
+</body>
+</html>
