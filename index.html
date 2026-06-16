@@ -289,18 +289,6 @@
     .level-grad { background: #f0fdf4; color: #166534; }
     .level-med { background: #fef3c7; color: #92400e; }
 
-    /* NEWS */
-    #news { background: var(--white); }
-    .news-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-    .news-card { border: 1px solid var(--lgray); border-radius: 14px; overflow: hidden; transition: all 0.25s; }
-    .news-card:hover { border-color: var(--teal); transform: translateY(-3px); box-shadow: var(--shadow); }
-    .news-img { height: 120px; background: linear-gradient(135deg, var(--navy), var(--navy2)); display: flex; align-items: center; justify-content: center; font-size: 40px; }
-    .news-body { padding: 20px; }
-    .news-date { font-size: 12px; font-weight: 600; color: var(--teal2); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
-    .news-title { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 8px; line-height: 1.4; }
-    .news-journal { font-size: 12px; font-style: italic; color: var(--gray); margin-bottom: 12px; }
-    .news-link { font-size: 13px; font-weight: 600; color: var(--teal2); text-decoration: none; }
-    .news-link:hover { text-decoration: underline; }
 
     /* CONTACT / JOIN */
     #contact { background: var(--navy); padding: 96px 0; }
@@ -337,7 +325,7 @@
       .nav-links { display: none; }
       .hero-inner { grid-template-columns: 1fr; gap: 48px; padding: 24px; }
       .hero h1 { font-size: 36px; }
-      .research-grid, .team-grid, .contact-grid, .courses-grid, .news-grid { grid-template-columns: 1fr; }
+      .research-grid, .team-grid, .contact-grid, .courses-grid { grid-template-columns: 1fr; }
       .students-grid, .alumni-grid { grid-template-columns: 1fr; }
       .container { padding: 0 24px; }
       .pi-featured { position: static; }
@@ -357,7 +345,6 @@
     <li><a href="#publications">Publications</a></li>
     <li><a href="#team">Team</a></li>
     <li><a href="#teaching">Teaching</a></li>
-    <li><a href="#news">News</a></li>
     <li><a href="#contact" class="nav-cta">Join Us</a></li>
   </ul>
 </nav>
@@ -424,10 +411,6 @@
         </ul>
       </div>
     </div>
-  </div>
-  <div class="scroll-hint">
-    <span>Scroll</span>
-    <div class="scroll-arrow"></div>
   </div>
 </section>
 
@@ -630,14 +613,6 @@
   </div>
 </section>
 
-<!-- NEWS - auto-generated from JS publications data -->
-<section id="news">
-  <div class="container">
-    <span class="section-label">Lab News</span>
-    <p class="section-desc">The latest from the Genomic Bioinformatics Lab.</p>
-    <div class="news-grid" id="news-grid"></div>
-  </div>
-</section>
 
 <!-- CONTACT / JOIN -->
 <section id="contact">
@@ -863,37 +838,6 @@ document.getElementById('show-more-btn').addEventListener('click', () => {
 });
 
 // ============================================================
-// RENDER NEWS from 3 most recent publications
-// ============================================================
-const CATEGORY_ICONS = {
-  cancer: '🧬',
-  epigenetics: '⚗️',
-  reproductive: '🔬',
-  microbiology: '🦠',
-  immunology: '🛡️',
-  tools: '🛠️',
-};
-
-function renderNews() {
-  const recent = PUBLICATIONS.slice(0, 3);
-  const grid = document.getElementById('news-grid');
-  grid.innerHTML = recent.map(p => {
-    const icon = CATEGORY_ICONS[p.categories[0]] || '📄';
-    return `
-      <div class="news-card">
-        <div class="news-img">${icon}</div>
-        <div class="news-body">
-          <p class="news-date">${p.date}</p>
-          <p class="news-title">New paper published in <em>${p.journal}</em></p>
-          <p class="news-journal">${p.title}</p>
-          ${p.doi ? `<a href="https://doi.org/${p.doi}" class="news-link" target="_blank" rel="noopener">Read paper &rarr;</a>` : ''}
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-// ============================================================
 // LIGHTBOX
 // ============================================================
 (function() {
@@ -940,7 +884,6 @@ window.addEventListener('scroll', () => {
 // INIT
 // ============================================================
 renderPubs();
-renderNews();
 </script>
 </body>
 </html>
