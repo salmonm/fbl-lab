@@ -227,6 +227,21 @@
     .h-index-item { background: rgba(0,180,216,0.10); border: 1px solid rgba(0,180,216,0.2); border-radius: 10px; padding: 12px 16px; text-align: center; flex: 1; }
     .h-num { font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 700; color: var(--teal); display: block; }
     .h-src { font-size: 10px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.05em; }
+    .photo-strip { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(5, 180px); gap: 10px; margin-bottom: 40px; }
+    .photo-strip img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; display: block; cursor: pointer; transition: opacity 0.2s; }
+    .photo-strip img:hover { opacity: 0.88; }
+    #lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 9999; align-items: center; justify-content: center; cursor: pointer; }
+    #lightbox.active { display: flex; }
+    #lightbox img { max-width: 90vw; max-height: 90vh; border-radius: 10px; box-shadow: 0 8px 48px rgba(0,0,0,0.6); }
+    .photo-strip img:nth-child(1) { grid-column: 1 / 3; grid-row: 1 / 3; }
+    .photo-strip img:nth-child(2) { grid-column: 3; grid-row: 1; }
+    .photo-strip img:nth-child(3) { grid-column: 3; grid-row: 2; }
+    .photo-strip img:nth-child(4) { grid-column: 1; grid-row: 3; }
+    .photo-strip img:nth-child(5) { grid-column: 2; grid-row: 3; }
+    .photo-strip img:nth-child(6) { grid-column: 3; grid-row: 3 / 5; }
+    .photo-strip img:nth-child(7) { grid-column: 1; grid-row: 4; }
+    .photo-strip img:nth-child(8) { grid-column: 2; grid-row: 4; }
+    .photo-strip img:nth-child(9) { grid-column: 1 / 4; grid-row: 5; }
     .students-section h3 { font-size: 22px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
     .students-section > p { font-size: 14px; color: var(--gray); margin-bottom: 28px; }
     .students-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
@@ -348,6 +363,12 @@
 </nav>
 
 <!-- HERO -->
+<!-- BANNER -->
+<div style="width:100%;line-height:0;padding-top:64px;margin-bottom:-4px;position:relative;">
+  <img src="banner.jpeg" alt="Genomic Bioinformatics Lab banner" style="width:100%;display:block;vertical-align:bottom;" />
+  <!-- gradient fade removed -->
+</div>
+
 <section class="hero" id="home">
   <div class="hero-inner">
     <div>
@@ -543,10 +564,36 @@
             <div class="alumni-item"><h5>Hodaya Bruner</h5><p>M.Sc. 2017 - Computational biology</p></div>
           </div>
         </div>
+        <div style="text-align:right;margin-top:28px;">
+          <img src="pictures/lab2.jpeg" alt="Lab life" style="width:420px;height:260px;object-fit:cover;border-radius:50%;display:inline-block;box-shadow:0 4px 18px rgba(0,0,0,0.13);" />
+          <div style="margin-top:12px;">
+            <a href="#" id="lab-photos-toggle" onclick="var s=document.getElementById('lab-life');var vis=s.style.display==='block';s.style.display=vis?'none':'block';this.textContent=vis?'See more photos from the lab \u2193':'Hide photos \u2191';return false;" style="font-size:13px;color:var(--teal2);font-weight:600;text-decoration:none;border-bottom:1px solid var(--teal2);padding-bottom:1px;">See more photos from the lab &darr;</a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+  <div id="lab-life" style="margin-top:48px;display:none;padding:0 0 48px;">
+    <div class="container" style="margin-bottom:16px;">
+      <h3 style="font-size:22px;font-weight:700;color:var(--navy);margin-bottom:8px;">Lab Life</h3>
+      <p style="font-size:14px;color:var(--gray);margin-bottom:0;">Moments from the lab.</p>
+    </div>
+    <div class="photo-strip" style="padding:0 48px;">
+      <img src="pictures/lab1.jpeg" alt="Lab photo 1" />
+      <img src="pictures/lab2.jpeg" alt="Lab photo 2" />
+      <img src="pictures/lab3.jpeg" alt="Lab photo 3" />
+      <img src="pictures/lab4.jpeg" alt="Lab photo 4" />
+      <img src="pictures/lab5.jpeg" alt="Lab photo 5" />
+      <img src="pictures/lab6.jpeg" alt="Lab photo 6" />
+      <img src="pictures/lab7.jpeg" alt="Lab photo 7" />
+      <img src="pictures/lab8.jpeg" alt="Lab photo 8" />
+      <img src="pictures/lab9.jpeg" alt="Lab photo 9" />
+    </div>
+  </div>
 </section>
+
+<!-- LIGHTBOX -->
+<div id="lightbox"><img id="lightbox-img" src="" alt="" /></div>
 
 <!-- TEACHING -->
 <section id="teaching">
@@ -845,6 +892,23 @@ function renderNews() {
     `;
   }).join('');
 }
+
+// ============================================================
+// LIGHTBOX
+// ============================================================
+(function() {
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lightbox-img');
+  document.querySelectorAll('.photo-strip img').forEach(function(img) {
+    img.addEventListener('click', function() {
+      lbImg.src = this.src;
+      lbImg.alt = this.alt;
+      lb.classList.add('active');
+    });
+  });
+  lb.addEventListener('click', function() { lb.classList.remove('active'); });
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') lb.classList.remove('active'); });
+})();
 
 // ============================================================
 // ALUMNI TOGGLE
